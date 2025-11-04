@@ -7,6 +7,7 @@ import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-ran
 import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
 import { DateUtils } from '../../shared/utils/date/date-utils';
 import { DataStoreService } from '../../shared/data/data-store.service';
+import { SHEETS_SPREADSHEET_ID } from '../../shared/config/sheets';
 
 @Component({
   selector: 'app-quote',
@@ -74,13 +75,12 @@ export class Quote implements OnInit, OnDestroy {
   }
 
   private getData(): void {
-    const id = '1hYob1tvU0fQdIgAbqh4Hqx_fyo6biXgb';
-    this.dataStoreService.getDatePrices(id);
+    this.dataStoreService.getDatePrices(SHEETS_SPREADSHEET_ID);
   }
 
   private listenDateChanges(): void {
     this.subscription$ = this.form.valueChanges.subscribe(
-      data => {
+      () => {
         this.setDateDiff();
       }
     );

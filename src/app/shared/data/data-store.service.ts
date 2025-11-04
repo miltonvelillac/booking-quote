@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, take, tap } from 'rxjs';
 import { DataModel } from '../models/data.model';
 import { DataApiService } from '../services/apis/data-api/data-api.service';
+import { SHEETS_SHEET_NAME } from '../config/sheets';
 
 @Injectable({ providedIn: 'root' })
 export class DataStoreService {
@@ -20,7 +21,7 @@ export class DataStoreService {
    */
   getDatePrices(
     spreadsheetId: string,
-    sheetName = 'Calenadario',
+    sheetName = SHEETS_SHEET_NAME,
     apiKey?: string
   ): void {
     if (apiKey) {
