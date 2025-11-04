@@ -1,0 +1,22 @@
+<mat-form-field>
+  <mat-label>{{label()}}</mat-label>
+  <mat-date-range-input [rangePicker]="picker">
+    <input
+        matStartDate
+        [formControl]="formFieldStart()"
+        [id]="idStart()"
+        [name]="nameStart()"
+        [placeholder]="placeholderStart()"
+    >
+    <input
+        matEndDate
+        [id]="idEnd()"
+        [name]="nameEnd()"
+        [formControl]="formFieldEnd()"
+        [placeholder]="placeholderEnd()"
+    >
+  </mat-date-range-input>
+  @if(showHint()) { <mat-hint>{{hint()}}</mat-hint> }  
+  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-date-range-picker #picker></mat-date-range-picker>
+</mat-form-field>

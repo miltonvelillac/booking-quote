@@ -1,27 +1,31 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DateField } from '../../shared/ui/atoms/date-field/date-field';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { QuoteFormNamesEnum } from '../../shared/enums/quote-form-names.enum';
+import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
+import { Button } from '../../shared/ui/atoms/button/button';
 
 @Component({
   selector: 'app-quote',
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    DateField
+    DateRangeField,
+    Button
   ],
   templateUrl: './quote.html',
   styleUrl: './quote.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Quote {
   formNames = QuoteFormNamesEnum;
 
   form = new FormGroup({
-    [this.formNames.fromDate]: new FormControl(),
-    [this.formNames.toDate]: new FormControl()
+    [this.formNames.fromDate]: new FormControl('', Validators.required),
+    [this.formNames.toDate]: new FormControl('', Validators.required)
   });
 
   submit(): void {
+    this.form.markAllAsTouched();
     console.log('hi', this.form.value)
   }
 
