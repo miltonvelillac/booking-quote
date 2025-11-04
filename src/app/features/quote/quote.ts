@@ -3,6 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { QuoteFormNamesEnum } from '../../shared/enums/quote-form-names.enum';
 import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
 import { Button } from '../../shared/ui/atoms/button/button';
+import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-range';
 
 @Component({
   selector: 'app-quote',
@@ -10,7 +11,8 @@ import { Button } from '../../shared/ui/atoms/button/button';
     FormsModule,
     ReactiveFormsModule,
     DateRangeField,
-    Button
+    Button,
+    CalendarRange
   ],
   templateUrl: './quote.html',
   styleUrl: './quote.scss',
@@ -26,7 +28,7 @@ export class Quote {
 
   submit(): void {
     this.form.markAllAsTouched();
-    console.log('hi', this.form.value)
+    console.log('hi', this.form.value);
   }
 
 }

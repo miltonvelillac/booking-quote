@@ -1,0 +1,10 @@
+<mat-calendar ngSkipHydration
+    [selected]="selectedRange"
+    (selectedChange)="onSelect($event)">
+</mat-calendar>
+
+    <!-- <p *ngIf="selectedRange">
+      Inicio: {{ selectedRange.start | date }}
+      <br>
+      Fin: {{ selectedRange.end | date }}
+    </p> -->

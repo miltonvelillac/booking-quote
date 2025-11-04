@@ -7,6 +7,10 @@
             idStart="startDateId"
             idEnd="endDateId"
         />
+        <app-calendar-range
+            [formFieldStart]="form.controls[formNames.fromDate]"
+            [formFieldEnd]="form.controls[formNames.toDate]"
+        />
         <app-button label="Submit" (onClick)="submit()"/>
     </form>    
 </section>
