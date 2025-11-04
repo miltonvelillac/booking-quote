@@ -1,0 +1,54 @@
+.cal-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 8px;
+
+    &__btn {
+        cursor: pointer;
+    }
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-weekdays {
+    font-size: 12px;
+    opacity: .7;
+}
+
+.day {
+    padding: 8px;
+    border-radius: 10px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.day.out {
+    opacity: .4;
+}
+
+.day.in-range {
+    background: rgba(0, 0, 0, .08);
+}
+
+.day.start,
+.day.end {
+    background: rgba(0, 0, 0, .18);
+    font-weight: 700;
+}
+
+button {
+    outline-offset: 2px;
+}

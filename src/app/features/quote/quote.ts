@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { QuoteFormNamesEnum } from '../../shared/enums/quote-form-names.enum';
-import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
 import { Button } from '../../shared/ui/atoms/button/button';
 import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-range';
+import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
 import { DateUtils } from '../../shared/utils/date/date-utils';
-import { Subscription } from 'rxjs';
+import { DataStoreService } from '../../shared/data/data-store.service';
 
 @Component({
   selector: 'app-quote',
@@ -22,6 +23,7 @@ import { Subscription } from 'rxjs';
 })
 export class Quote implements OnInit, OnDestroy {
   private dateUtils = inject(DateUtils);
+  private dataStoreService = inject(DataStoreService);
   formNames = QuoteFormNamesEnum;
 
   form = new FormGroup({
@@ -35,12 +37,15 @@ export class Quote implements OnInit, OnDestroy {
 
   subscription$ = new Subscription();
 
+  constructor() {
+    effect(() => {
+      const data = this.dataStoreService.getData();
+    });
+  }
+
   ngOnInit(): void {
-    this.subscription$ = this.form.valueChanges.subscribe(
-      data => {
-        this.setDateDiff();
-      }
-    );
+    this.listenDateChanges();
+    this.getData();
   }
 
   ngOnDestroy(): void {
@@ -53,7 +58,7 @@ export class Quote implements OnInit, OnDestroy {
 
   submit(): void {
     this.form.markAllAsTouched();
-    if(!this.form.valid) return;
+    if (!this.form.valid) return;
   }
 
   private setDateDiff(): void {
@@ -64,8 +69,21 @@ export class Quote implements OnInit, OnDestroy {
   private getDateDiff(): number {
     const fromDate = this.getFormRangeFields(this.formNames.fromDate)?.value;
     const toDate = this.getFormRangeFields(this.formNames.toDate)?.value;
-    if(!fromDate || !toDate) return 0;
+    if (!fromDate || !toDate) return 0;
     return this.dateUtils.substractDates(toDate, fromDate);
+  }
+
+  private getData(): void {
+    const id = '1hYob1tvU0fQdIgAbqh4Hqx_fyo6biXgb';
+    this.dataStoreService.getDatePrices(id);
+  }
+
+  private listenDateChanges(): void {
+    this.subscription$ = this.form.valueChanges.subscribe(
+      data => {
+        this.setDateDiff();
+      }
+    );
   }
 
 }

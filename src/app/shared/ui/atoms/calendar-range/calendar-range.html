@@ -1,10 +1,36 @@
-<mat-calendar ngSkipHydration
-    [selected]="selectedRange"
-    (selectedChange)="onSelect($event)">
-</mat-calendar>
+<div class="cal-wrapper">
+  @for (month of months(); track $index) {
+    <div class="cal">
+      <div class="cal-header">
+        @if (month.index===0) {<button type="button" (click)="prev()">‹</button>}        
+        <span>{{ month.label }}</span>
+        @if (month.index===1) {<button type="button" (click)="next()">›</button>}        
+      </div>
 
-    <!-- <p *ngIf="selectedRange">
-      Inicio: {{ selectedRange.start | date }}
-      <br>
-      Fin: {{ selectedRange.end | date }}
-    </p> -->
+      <div class="cal-grid cal-weekdays">
+        @for (w of weekdays(); track $index) {
+          <div>{{ w }}</div>
+        }
+      </div>
+
+      <div class="cal-grid" role="grid" aria-label="Calendario">
+        @for (c of month.cells; track $index) {
+          <button
+            type="button"
+            class="day"
+            [class.out]="!c.inMonth"
+            [class.in-range]="inRange(c.date)"
+            [class.start]="isStart(c.date)"
+            [class.end]="isEnd(c.date)"
+            [disabled]="isDisabled(c.date)"
+            (click)="onPick(c.date)"
+            (mouseenter)="hover.set(c.date)"
+            (mouseleave)="hover.set(null)"
+            [attr.aria-label]="ariaLabel(c.date)">
+            {{ c.date.getUTCDate() }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+  </div>
