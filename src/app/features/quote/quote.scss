@@ -12,3 +12,11 @@
     align-items: center;
     gap: 1rem;
 }
+
+.result {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    width: 100%;
+    text-align: center;
+}

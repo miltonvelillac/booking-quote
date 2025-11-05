@@ -6,7 +6,9 @@
         />
     </form>
     @if(diffDays()) {
-        <p>{{diffDays()}} Noches</p>
-        <strong>Total: {{price() | currency}}</strong>
+        <section class="result">
+            <p>{{diffDays()}} Noches</p>
+            <strong>Total: {{price() | currency}}</strong>
+        </section>
     }
 </section>

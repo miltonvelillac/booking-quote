@@ -8,9 +8,9 @@
   @for (month of months(); track $index) {
     <div class="cal">
       <div class="cal-header">
-        @if (month.index===0) {<button type="button" (click)="prev()">‹</button>}        
+        @if (month.index===0) {<button class="cal-header__btn" type="button" (click)="prev()">‹</button>}        
         <span>{{ month.label }}</span>
-        @if (month.index===1) {<button type="button" (click)="next()">›</button>}        
+        @if (month.index===1) {<button class="cal-header__btn" type="button" (click)="next()">›</button>}        
       </div>
 
       <div class="cal-grid cal-weekdays">
