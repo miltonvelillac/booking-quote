@@ -11,10 +11,9 @@
             [formFieldStart]="getFormRangeFields(formNames.fromDate)"
             [formFieldEnd]="getFormRangeFields(formNames.toDate)"
         />
-        <app-button label="Submit" (onClick)="submit()"/>
     </form>
     @if(diffDays()) {
         <p>{{diffDays()}} Noches</p>
+        <strong>Total: {{price() | currency}}</strong>
     }
 </section>
-18 fiv 10:30 centro comercial arkadia 4to piso

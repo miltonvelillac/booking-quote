@@ -9,7 +9,7 @@ export class DataStoreService {
   private dataApiService = inject(DataApiService);
 
   #data = signal<DataModel[]>([]);
-  getData = computed(() => this.#data());
+  getData = computed(() => this.#data);
   setData = (data: DataModel[]) => this.#data.update(() => data);
 
   /**

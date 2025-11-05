@@ -39,7 +39,6 @@ function buildMonthCells(monthUTC: Date): DayCell[] {
 export class CalendarRange {
   formFieldStart = input.required<FormControl<Date | null>>();
   formFieldEnd = input.required<FormControl<Date | null>>();
-  firstDayMonday = input<boolean>(true);
   maxDays = input<number | null>(null);
   minDate = input<Date | null>(null);
   maxDate = input<Date | null>(null);
@@ -48,9 +47,7 @@ export class CalendarRange {
   currentMonth = signal(startOfMonthUTC(new Date()));
   hover = signal<Date | null>(null);
 
-  weekdays = computed(() =>
-    this.firstDayMonday() ? ['L', 'M', 'X', 'J', 'V', 'S', 'D'] : ['D', 'L', 'M', 'X', 'J', 'V', 'S']
-  );
+  weekdays = computed(() => ['D', 'L', 'M', 'X', 'J', 'V', 'S']);
 
   months = computed(() => {
     const first = this.currentMonth();
@@ -90,16 +87,16 @@ export class CalendarRange {
     return false;
   }
 
-  onPick(date1: Date) {
+  onPick(date: Date) {
     const start = this.startValue();
     const end = this.endValue();
 
-    const date = new Date();
-    date.setFullYear((date1.getFullYear()))
-    date.setMonth((date1.getMonth()));
-    date.setDate(date1.getDate() + 1);
+    // const date =  new Date(date1.getTime());
+    // date.setFullYear((date1.getFullYear()))
+    // date.setMonth((date1.getMonth()));
+    // date.setDate(date.getDate() + 1);
 
-    if (!start || (start && end) || (start > date1)) {
+    if (!start || (start && end) || (start > date)) {
       this.formFieldStart().setValue(date);
       this.formFieldEnd().setValue(null);
       this.markTouched();

@@ -27,7 +27,7 @@
             (mouseenter)="hover.set(c.date)"
             (mouseleave)="hover.set(null)"
             [attr.aria-label]="ariaLabel(c.date)">
-            {{ c.date.getUTCDate() }}
+            {{ c.date.getDate() }}
           </button>
         }
       </div>
