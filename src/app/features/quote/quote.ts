@@ -6,7 +6,6 @@ import { SHEETS_SPREADSHEET_ID } from '../../shared/config/sheets';
 import { DataStoreService } from '../../shared/data/data-store.service';
 import { QuoteFormNamesEnum } from '../../shared/enums/quote-form-names.enum';
 import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-range';
-import { DateRangeField } from '../../shared/ui/atoms/date-range-field/date-range-field';
 import { DateUtils } from '../../shared/utils/date/date-utils';
 
 @Component({
@@ -15,7 +14,6 @@ import { DateUtils } from '../../shared/utils/date/date-utils';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    DateRangeField,
     CalendarRange
   ],
   templateUrl: './quote.html',
@@ -75,7 +73,7 @@ export class Quote implements OnInit, OnDestroy {
    * Calcula el precio por fecha en el rango [startDate, endDate] (inclusive)
    * usando los datos cargados en el store (date -> price).
    */
-  getPricePerDate(startDate: Date, endDate: Date): { date: string; price: number }[] {
+  private getPricePerDate(startDate: Date, endDate: Date): { date: string; price: number }[] {
     if (!startDate || !endDate) return [];
 
     const map = new Map(
