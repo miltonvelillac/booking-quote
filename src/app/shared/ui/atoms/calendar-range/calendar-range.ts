@@ -5,23 +5,23 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 type DayCell = { date: Date; inMonth: boolean; };
 
-function startOfMonthUTC(d: Date) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)); }
-function addMonthsUTC(d: Date, m: number) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, 1)); }
+function startOfMonthUTC(d: Date) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function addMonthsUTC(d: Date, m: number) { return new Date(d.getFullYear(), d.getMonth() + m, 1); }
 function sameDay(a: Date | null, b: Date | null) {
   return !!a && !!b &&
-    a.getUTCFullYear() === b.getUTCFullYear() &&
-    a.getUTCMonth() === b.getUTCMonth() &&
-    a.getUTCDate() === b.getUTCDate();
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
 }
-function buildMonthCells(monthUTC: Date): DayCell[] {
-  const y = monthUTC.getUTCFullYear(), m = monthUTC.getUTCMonth();
-  const first = new Date(Date.UTC(y, m, 1));
-  const firstWeekday = (first.getUTCDay() + 6) % 7; // lunes=0
-  const start = new Date(Date.UTC(y, m, 1 - firstWeekday));
+function buildMonthCells(monthLocal: Date): DayCell[] {
+  const y = monthLocal.getFullYear(), m = monthLocal.getMonth();
+  const first = new Date(y, m, 1);
+  const firstWeekday = first.getDay(); // domingo=0
+  const start = new Date(y, m, 1 - firstWeekday);
   const cells: DayCell[] = [];
   for (let i = 0; i < 42; i++) {
-    const d = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + i));
-    cells.push({ date: d, inMonth: d.getUTCMonth() === m });
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    cells.push({ date: d, inMonth: d.getMonth() === m });
   }
   return cells;
 }
@@ -62,7 +62,7 @@ export class CalendarRange {
   isStart(date: Date) { return sameDay(this.startValue() ?? null, date); }
   isEnd(date: Date) { return sameDay(this.endValue() ?? null, date); }
 
-  inRange(date: Date) {
+  inRange(date: Date): boolean {
     const start = this.startValue(), end = this.endValue() ?? this.hover();
     if (!start || !end) return false;
     const a = +start, b = +end;
@@ -70,10 +70,10 @@ export class CalendarRange {
     return +date >= min && +date <= max;
   }
 
-  isDisabled(d: Date) {
+  isDisabled(date: Date): boolean {
     const min = this.minDate(), max = this.maxDate();
-    if (min && +d < +this.stripUTC(min)) return true;
-    if (max && +d > +this.stripUTC(max)) return true;
+    if (min && +date < +this.stripUTC(min)) return true;
+    if (max && +date > +this.stripUTC(max)) return true;
 
     const maxDays = this.maxDays();
     const startDate = this.startValue();
@@ -81,7 +81,7 @@ export class CalendarRange {
       const start = this.stripUTC(startDate);
       const msPerDay = 24 * 60 * 60 * 1000;
       const maxEnd = new Date(start.getTime() + (maxDays - 1) * msPerDay);
-      const dUTC = this.stripUTC(d);
+      const dUTC = this.stripUTC(date);
       if (+dUTC < +start || +dUTC > +maxEnd) return true;
     }
     return false;
@@ -90,11 +90,6 @@ export class CalendarRange {
   onPick(date: Date) {
     const start = this.startValue();
     const end = this.endValue();
-
-    // const date =  new Date(date1.getTime());
-    // date.setFullYear((date1.getFullYear()))
-    // date.setMonth((date1.getMonth()));
-    // date.setDate(date.getDate() + 1);
 
     if (!start || (start && end) || (start > date)) {
       this.formFieldStart().setValue(date);
@@ -115,11 +110,11 @@ export class CalendarRange {
   next() { this.currentMonth.set(addMonthsUTC(this.currentMonth(), 1)); }
 
   ariaLabel(d: Date) {
-    return new Intl.DateTimeFormat('es-CO', { dateStyle: 'full', timeZone: 'UTC' }).format(d);
+    return new Intl.DateTimeFormat('es-CO', { dateStyle: 'full' }).format(d);
   }
 
   private stripUTC(date: Date) {
-    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
   private markTouched() {
@@ -132,3 +127,5 @@ export class CalendarRange {
   private endValue(): Date | null { return this.formFieldEnd().value; }
 
 }
+
+

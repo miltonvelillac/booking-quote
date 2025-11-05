@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { SHEETS_SPREADSHEET_ID } from '../../shared/config/sheets';
 import { QuoteFormNamesEnum } from '../../shared/enums/quote-form-names.enum';
 import { DataUtilsService } from '../../shared/services/utils/data/data-utils.service';
-import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-range';
 import { DateUtilsService } from '../../shared/services/utils/date/date-utils.service';
+import { CalendarRange } from '../../shared/ui/atoms/calendar-range/calendar-range';
 import { DataStoreService } from '../../store/data/data-store.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { DataStoreService } from '../../store/data/data-store.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    CalendarRange
+    CalendarRange,
   ],
   templateUrl: './quote.html',
   styleUrl: './quote.scss',

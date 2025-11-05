@@ -10,7 +10,7 @@ export class DataUtilsService {
 
   calcTotalPrice(props: { startDate: Date, endDate: Date, data: DataModel[] }): number {
     const { startDate, endDate, data } = props;
-
+    
     const pricePerDate = this.getPricePerDate({ startDate, endDate, data });
     return pricePerDate.slice(0, -1).reduce((value, obj) => obj.price + value, 0);    
   }
@@ -29,10 +29,8 @@ export class DataUtilsService {
     );
 
     const results: { date: string; price: number }[] = [];
-    const start = this.dateUtils.stripUTC(startDate);
-    const end = this.dateUtils.stripUTC(endDate);
 
-    for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const key = this.dateUtils.toISODate(d);
       const price = map.get(key);
       if (Number.isFinite(price)) {

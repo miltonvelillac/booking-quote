@@ -15,7 +15,7 @@ export class DateUtilsService {
       .slice(0, 10);
   }
 
-  stripUTC(date: Date) {
+  stripUTC(date: Date): Date {
     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   }
   
