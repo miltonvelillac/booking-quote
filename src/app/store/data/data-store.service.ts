@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, take, tap } from 'rxjs';
-import { DataModel } from '../models/data.model';
-import { DataApiService } from '../services/apis/data-api/data-api.service';
-import { SHEETS_SHEET_NAME } from '../config/sheets';
+import { DataModel } from '../../shared/models/data.model';
+import { DataApiService } from '../../shared/services/apis/data-api/data-api.service';
+import { SHEETS_SHEET_NAME } from '../../shared/config/sheets';
 
 @Injectable({ providedIn: 'root' })
 export class DataStoreService {
