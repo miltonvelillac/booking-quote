@@ -4,6 +4,32 @@
     gap: 16px;
 }
 
+.cal-toolbar {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .cal-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+  }
+
+  /* Oculta los botones de navegación en los headers por mes */
+  .cal-header > button {
+    display: none;
+  }
+}
+
 .cal-header {
     display: flex;
     align-items: center;

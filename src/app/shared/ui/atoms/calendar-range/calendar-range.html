@@ -1,3 +1,9 @@
+<div class="cal-toolbar">
+  <button type="button" (click)="prev()">‹</button>
+  <span class="cal-toolbar__label">{{ months()[0].label }} – {{ months()[1].label }}</span>
+  <button type="button" (click)="next()">›</button>
+</div>
+
 <div class="cal-wrapper">
   @for (month of months(); track $index) {
     <div class="cal">
