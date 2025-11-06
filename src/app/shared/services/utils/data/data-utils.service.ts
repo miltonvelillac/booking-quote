@@ -1,12 +1,15 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { DataModel } from '../../../models/data.model';
 import { DateUtilsService } from '../date/date-utils.service';
+
+type PriceObjType = { price: number; priceOneNigth: number; } | undefined;
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataUtilsService {
   private dateUtils = inject(DateUtilsService);
+  surcharge = signal(0);
 
   calcTotalPrice(props: { startDate: Date, endDate: Date, data: DataModel[] }): number {
     const { startDate, endDate, data } = props;
@@ -25,19 +28,45 @@ export class DataUtilsService {
 
     const map = new Map(
       data
-        .map((data) => [data.date, data.price] as const)
+        .map((data) => [data.date, { price: data.price, priceOneNigth: data.priceOneNigth }] as const)
     );
 
+    const diffInDays = this.dateUtils.substractDates(endDate, startDate);
     const results: { date: string; price: number }[] = [];
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const key = this.dateUtils.toISODate(d);
-      const price = map.get(key);
+      const priceObj = this.getPriceObj({ map, key });
+      const price = this.getPrice({ priceObj, diffInDays });
+      this.calcSurcharge({ priceObj, diffInDays });
+
       if (Number.isFinite(price)) {
         results.push({ date: key, price: price as number });
       }
     }
+
     return results;
+  }
+
+  private getPriceObj(props: { map: Map<string, { price: number; priceOneNigth: number; }>, key: string }): PriceObjType {
+    const { map, key } = props;
+    return map.get(key);
+  }
+
+  private getPrice(props: { priceObj: PriceObjType, diffInDays: number}): number | undefined {
+    const { priceObj, diffInDays } = props;
+
+    return diffInDays === 1 ? priceObj?.priceOneNigth : priceObj?.price;
+  }
+
+  private calcSurcharge(props: { priceObj: PriceObjType, diffInDays: number}): void {
+    const { priceObj, diffInDays } = props;
+
+    if(diffInDays === 1) {
+      this.surcharge.update(() => (priceObj?.price || 0) * 100 / (priceObj?.priceOneNigth || 1));
+    } else {
+      this.surcharge.update(() => 0);
+    }
   }
 
 }

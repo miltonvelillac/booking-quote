@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { SHEETS_SPREADSHEET_ID } from '../../shared/config/sheets';
@@ -38,6 +38,10 @@ export class Quote implements OnInit, OnDestroy {
   price = signal(0);
   diffDays = signal(0);
   data = this.dataStoreService.getData();
+
+  warningDaysMessage = computed(() => {
+    return this.diffDays() === 1 ? 'Si se selecciona una sola noche para el fin de semana la tarifa tendrá un recargo' : '';
+  });
 
   subscription$ = new Subscription();
 

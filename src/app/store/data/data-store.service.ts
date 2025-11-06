@@ -72,6 +72,8 @@ export class DataStoreService {
     const headerCells = lines[0].split(',').map((c) => c.trim());
     let dateIdx = headerCells.findIndex((c) => c.toLowerCase() === dateHeader.toLowerCase());
     let priceIdx = headerCells.findIndex((c) => /^(precio|price)$/i.test(c));
+    let priceOneNight = headerCells.findIndex((c) => /^(precioUnaNoche|priceOneNight)$/i.test(c));
+    if (priceOneNight < 0) priceOneNight = 8; // I
     if (priceIdx < 0) priceIdx = 7; // H
     if (dateIdx < 0) dateIdx = 0; // A
 
@@ -80,9 +82,11 @@ export class DataStoreService {
       const cells = formatedLine.split(';');
       const a = cells[dateIdx];
       const h = cells[priceIdx];
+      const p1nigth = cells[priceOneNight];
       const date = this.normalizeDate(a);
       const price = this.toNumber(h);
-      return { date, price } as DataModel;
+      const oneNightPrice = this.toNumber(p1nigth);
+      return { date, price, priceOneNigth: oneNightPrice } as DataModel;
     }).filter((r) => !!r.date && Number.isFinite(r.price));
   }
 
