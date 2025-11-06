@@ -1,7 +1,7 @@
 <div class="cal-toolbar">
-  <button type="button" (click)="prev()">‹</button>
+  <button class="cal-header__btn" type="button" (click)="prev()">‹</button>
   <span class="cal-toolbar__label">{{ months()[0].label }} – {{ months()[1].label }}</span>
-  <button type="button" (click)="next()">›</button>
+  <button class="cal-header__btn" type="button" (click)="next()">›</button>
 </div>
 
 <div class="cal-wrapper">
@@ -9,7 +9,7 @@
     <div class="cal">
       <div class="cal-header">
         @if (month.index===0) {<button class="cal-header__btn" type="button" (click)="prev()">‹</button>}        
-        <span>{{ month.label }}</span>
+        <span class="cal-header__label">{{ month.label }}</span>
         @if (month.index===1) {<button class="cal-header__btn" type="button" (click)="next()">›</button>}        
       </div>
 

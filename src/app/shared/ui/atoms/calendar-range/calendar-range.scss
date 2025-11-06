@@ -1,7 +1,11 @@
+$button-bg: #2bcdee;
+$day-hover-bg:  rgba($button-bg, .3);
+$day-selected-bg:  rgba($button-bg, .8);
+
 .cal-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 2rem;
 }
 
 .cal-toolbar {
@@ -38,7 +42,24 @@
     margin-bottom: 8px;
 
     &__btn {
-        cursor: pointer;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+    }
+
+    &__btn:active {
+      color: rgba($button-bg, 1);
+    }
+
+    &__btn:hover {
+      color: rgba($button-bg, .5);
+      border-radius: 50%;      
+    }
+
+    &__label {
+      flex: 1;
+      text-align: center;
     }
 }
 
@@ -49,16 +70,22 @@
 }
 
 .cal-weekdays {
-    font-size: 12px;
+    font-size: 0.8rem;
     opacity: .7;
+    text-align: center;
 }
 
 .day {
-    padding: 8px;
-    border-radius: 10px;
+    font-size: 1rem;
+    padding: 0.8rem;
+    border-radius: 50%;
     border: 0;
     background: transparent;
     cursor: pointer;
+
+    &:hover {
+      background: $day-hover-bg;
+    }
 }
 
 .day.out {
@@ -66,12 +93,12 @@
 }
 
 .day.in-range {
-    background: rgba(0, 0, 0, .08);
+    background: $day-hover-bg;
 }
 
 .day.start,
 .day.end {
-    background: rgba(0, 0, 0, .18);
+    background: $day-selected-bg;
     font-weight: 700;
 }
 

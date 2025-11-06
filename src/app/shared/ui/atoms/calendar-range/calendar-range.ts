@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -26,9 +27,14 @@ function buildMonthCells(monthLocal: Date): DayCell[] {
   return cells;
 }
 
+function getTitleFormat(value?: string): string | undefined {
+  return !value ? value : value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 @Component({
   selector: 'app-calendar-range',
   imports: [
+    CommonModule,
     MatDatepickerModule
   ],
   templateUrl: './calendar-range.html',
@@ -54,11 +60,11 @@ export class CalendarRange {
     const second = addMonthsUTC(first, 1);
     const fmt = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'UTC' });
     return [
-      { index: 0, date: first, label: fmt.format(first), cells: buildMonthCells(first) },
-      { index: 1, date: second, label: fmt.format(second), cells: buildMonthCells(second) },
+      { index: 0, date: first, label: getTitleFormat(fmt.format(first)), cells: buildMonthCells(first) },
+      { index: 1, date: second, label: getTitleFormat(fmt.format(second)), cells: buildMonthCells(second) },
     ];
   });
-  
+
   isStart(date: Date) { return sameDay(this.startValue() ?? null, date); }
   isEnd(date: Date) { return sameDay(this.endValue() ?? null, date); }
 
