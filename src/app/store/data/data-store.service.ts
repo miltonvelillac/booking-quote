@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, take, tap } from 'rxjs';
+import moment from 'moment';
 import { DataModel } from '../../shared/models/data.model';
 import { DataApiService } from '../../shared/services/apis/data-api/data-api.service';
 import { SHEETS_SHEET_NAME } from '../../shared/config/sheets';
@@ -88,80 +89,44 @@ export class DataStoreService {
   private normalizeDate(input: any): string | null {
     if (input == null) return null;
 
-    // If already a Date instance
+    // Date instance
     if (input instanceof Date && !isNaN(input.getTime())) {
-      const y = input.getFullYear(), m = input.getMonth(), d = input.getDate();
-      const utc = new Date(Date.UTC(y, m, d));
-      return utc.toISOString().slice(0, 10);
+      return moment
+        .utc([input.getFullYear(), input.getMonth(), input.getDate()])
+        .format('YYYY-MM-DD');
     }
 
-    // If numeric (e.g., Google Sheets/Excel serial date)
+    // Numeric or numeric string: Google Sheets/Excel serial (epoch 1899-12-30)
     if (typeof input === 'number' || /^-?\d+(\.\d+)?$/.test(String(input).trim())) {
       const n = typeof input === 'number' ? input : parseFloat(String(input).trim());
       if (Number.isFinite(n)) {
-        const msPerDay = 24 * 60 * 60 * 1000;
-        // Excel/Sheets epoch (1899-12-30) in UTC
-        const excelEpochUTC = Date.UTC(1899, 11, 30);
-        const utcMs = excelEpochUTC + Math.floor(n) * msPerDay;
-        const d = new Date(utcMs);
-        if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+        return moment.utc('1899-12-30', 'YYYY-MM-DD', true).add(Math.floor(n), 'days').format('YYYY-MM-DD');
       }
     }
 
     let s = String(input).trim();
-    // Guard against headers like 'Fecha'
     if (/fecha/i.test(s)) return null;
+    s = s.replace(/^['"]|['"]$/g, '').trim();
 
-    // Remove surrounding quotes
-    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
-      s = s.slice(1, -1).trim();
-    }
+    // Try ISO 8601 first
+    let m = moment.utc(s, moment.ISO_8601, true);
+    if (m.isValid()) return m.format('YYYY-MM-DD');
 
-    // Strip time portion if present (e.g., "DD/MM/YYYY HH:mm[:ss]", "YYYY-MM-DDTHH:mm:ssZ")
-    // Keep only the first date-like segment
-    const timeIdx = s.search(/[ T]\d{1,2}:\d{2}/);
-    if (timeIdx > 0) s = s.slice(0, timeIdx).trim();
+    // Try a set of strict date-only formats, prioritizing Spanish-style DD/MM/YYYY
+    const formats = [
+      'YYYY-MM-DD', 'YYYY/MM/DD', 'YYYY.MM.DD',
+      'DD/MM/YYYY', 'DD-MM-YYYY', 'DD.MM.YYYY',
+      'D/M/YYYY', 'D-M-YYYY', 'D.M.YYYY',
+      'DD/MM/YY', 'DD-MM-YY', 'DD.MM.YY',
+    ];
+    m = moment.utc(s, formats as any, true);
+    if (m.isValid()) return m.format('YYYY-MM-DD');
 
-    // ISO YYYY-MM-DD (avoid Date(string) parsing differences in Safari/Firefox)
-    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if (m) {
-      const y = parseInt(m[1], 10);
-      const mo = parseInt(m[2], 10);
-      const da = parseInt(m[3], 10);
-      const d = new Date(Date.UTC(y, mo - 1, da));
-      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-      return null;
-    }
-
-    // YYYY/MM/DD (common from some exports)
-    m = s.match(/^(\d{4})[\/\.](\d{1,2})[\/\.](\d{1,2})$/);
-    if (m) {
-      const y = parseInt(m[1], 10);
-      const mo = parseInt(m[2], 10);
-      const da = parseInt(m[3], 10);
-      const d = new Date(Date.UTC(y, mo - 1, da));
-      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-      return null;
-    }
-
-    // DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
-    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
-    if (m) {
-      const day = parseInt(m[1], 10);
-      const month = parseInt(m[2], 10);
-      let year = parseInt(m[3], 10);
-      if (year < 100) year += 2000; // assume 20xx for 2-digit years
-      const d = new Date(Date.UTC(year, month - 1, day));
-      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-      return null;
-    }
-
-    // Fallback: let Date parse string, then normalize via UTC components
-    const tmp = new Date(s);
-    if (!isNaN(tmp.getTime())) {
-      const y = tmp.getFullYear(), mo = tmp.getMonth(), da = tmp.getDate();
-      const d = new Date(Date.UTC(y, mo, da));
-      return d.toISOString().slice(0, 10);
+    // If the string includes a time after a space or 'T', keep date part and retry
+    const cut = s.split(/[T ]/)[0];
+    if (cut && cut !== s) {
+      m = moment.utc(cut, formats as any, true);
+      if (m.isValid()) return m.format('YYYY-MM-DD');
     }
 
     return null;
