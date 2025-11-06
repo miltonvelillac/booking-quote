@@ -86,29 +86,85 @@ export class DataStoreService {
   }
 
   private normalizeDate(input: any): string | null {
-    if (!input) return null;
-    // Try to parse as Date. Supports ISO or DD/MM/YYYY/MM-DD-YYYY heuristics
-    const s = String(input).trim();
+    if (input == null) return null;
+
+    // If already a Date instance
+    if (input instanceof Date && !isNaN(input.getTime())) {
+      const y = input.getFullYear(), m = input.getMonth(), d = input.getDate();
+      const utc = new Date(Date.UTC(y, m, d));
+      return utc.toISOString().slice(0, 10);
+    }
+
+    // If numeric (e.g., Google Sheets/Excel serial date)
+    if (typeof input === 'number' || /^-?\d+(\.\d+)?$/.test(String(input).trim())) {
+      const n = typeof input === 'number' ? input : parseFloat(String(input).trim());
+      if (Number.isFinite(n)) {
+        const msPerDay = 24 * 60 * 60 * 1000;
+        // Excel/Sheets epoch (1899-12-30) in UTC
+        const excelEpochUTC = Date.UTC(1899, 11, 30);
+        const utcMs = excelEpochUTC + Math.floor(n) * msPerDay;
+        const d = new Date(utcMs);
+        if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+      }
+    }
+
+    let s = String(input).trim();
     // Guard against headers like 'Fecha'
     if (/fecha/i.test(s)) return null;
 
-    let d: Date | null = null;
-    // If looks like DD/MM/YYYY, rearrange to YYYY-MM-DD
-    const m = s.match(/^(\d{1,2})[\/](\d{1,2})[\/](\d{2,4})$/);
-    if (m) {
-      const day = m[1].padStart(2, '0');
-      const month = m[2].padStart(2, '0');
-      const year = m[3].length === 2 ? `20${m[3]}` : m[3];
-      d = new Date(`${year}-${month}-${day}T00:00:00`);
-    } else if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-      d = new Date(`${s}T00:00:00`);
-    } else {
-      const tmp = new Date(s);
-      if (!isNaN(tmp.getTime())) d = tmp;
+    // Remove surrounding quotes
+    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+      s = s.slice(1, -1).trim();
     }
 
-    if (!d || isNaN(d.getTime())) return null;
-    return d.toISOString().slice(0, 10); // YYYY-MM-DD
+    // Strip time portion if present (e.g., "DD/MM/YYYY HH:mm[:ss]", "YYYY-MM-DDTHH:mm:ssZ")
+    // Keep only the first date-like segment
+    const timeIdx = s.search(/[ T]\d{1,2}:\d{2}/);
+    if (timeIdx > 0) s = s.slice(0, timeIdx).trim();
+
+    // ISO YYYY-MM-DD (avoid Date(string) parsing differences in Safari/Firefox)
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m) {
+      const y = parseInt(m[1], 10);
+      const mo = parseInt(m[2], 10);
+      const da = parseInt(m[3], 10);
+      const d = new Date(Date.UTC(y, mo - 1, da));
+      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+      return null;
+    }
+
+    // YYYY/MM/DD (common from some exports)
+    m = s.match(/^(\d{4})[\/\.](\d{1,2})[\/\.](\d{1,2})$/);
+    if (m) {
+      const y = parseInt(m[1], 10);
+      const mo = parseInt(m[2], 10);
+      const da = parseInt(m[3], 10);
+      const d = new Date(Date.UTC(y, mo - 1, da));
+      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+      return null;
+    }
+
+    // DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+    if (m) {
+      const day = parseInt(m[1], 10);
+      const month = parseInt(m[2], 10);
+      let year = parseInt(m[3], 10);
+      if (year < 100) year += 2000; // assume 20xx for 2-digit years
+      const d = new Date(Date.UTC(year, month - 1, day));
+      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+      return null;
+    }
+
+    // Fallback: let Date parse string, then normalize via UTC components
+    const tmp = new Date(s);
+    if (!isNaN(tmp.getTime())) {
+      const y = tmp.getFullYear(), mo = tmp.getMonth(), da = tmp.getDate();
+      const d = new Date(Date.UTC(y, mo, da));
+      return d.toISOString().slice(0, 10);
+    }
+
+    return null;
   }
 
   private toNumber(input: any): number {
