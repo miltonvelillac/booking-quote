@@ -1,0 +1,60 @@
+:host {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+.theme-toggle {
+  border: 1px solid var(--mat-sys-primary, rgba(0, 0, 0, 0.2));
+  border-radius: 999px;
+  background-color: var(--mat-sys-primary-container, var(--mat-sys-surface));
+  color: var(--mat-sys-on-primary-container, var(--mat-sys-on-surface));
+  padding: 0.5rem 1rem;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.theme-toggle:hover {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--mat-sys-on-primary-container);
+  outline-offset: 2px;
+}
+
+.theme-toggle__legend {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.theme-toggle__value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+@media (max-width: 599px) {
+  :host {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .theme-toggle {
+    padding: 0.45rem 0.85rem;
+    min-width: unset;
+  }
+}

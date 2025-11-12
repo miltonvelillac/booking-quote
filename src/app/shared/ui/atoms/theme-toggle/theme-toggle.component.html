@@ -1,0 +1,10 @@
+<button
+  type="button"
+  class="theme-toggle"
+  (click)="onToggle()"
+  [attr.aria-label]="description()"
+  [attr.title]="description()"
+>
+  <span class="theme-toggle__legend">Tema</span>
+  <span class="theme-toggle__value">{{ labelFor(preference()) }}</span>
+</button>

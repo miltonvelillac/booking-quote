@@ -16,7 +16,7 @@
 .result {
     position: sticky;
     bottom: 0;
-    background-color: #fff;
+    background-color: var(--mat-sys-surface);
     width: 100%;
     text-align: center;
     display: flex;

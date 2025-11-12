@@ -6,34 +6,72 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+$light-theme: (
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: Roboto,
+  density: 0,
+);
+
+$dark-theme: (
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: Roboto,
+  density: 0,
+);
+
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  min-height: 100%;
+}
+
+html,
+html[data-theme='light'] {
+  @include mat.theme($light-theme);
+}
+
+html[data-theme='dark'] {
+  @include mat.theme($dark-theme);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    @include mat.theme($dark-theme);
+  }
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
+  margin: 0;
+  min-height: 100%;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  transition: background-color 150ms ease, color 150ms ease;
+  color-scheme: light;
 }
-/* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html[data-theme='dark'] body {
+  color-scheme: dark;
+}
+
+html[data-theme='light'] body {
+  color-scheme: light;
+}
+
+html:not([data-theme]) body {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) body {
+    color-scheme: dark;
+  }
+}
+
+/* You can add global styles to this file, and also import other style files */
